@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка фото</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Kurale&family=Marck+Script&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+          --color-bg: #000000;
+          --color-text: #cccccc;
+          --color-accent: #0a93c0;
+        }
+
+        body {
+          background-color: var(--color-bg);
+          color: var(--color-text);
+          font-family: 'Kurale', serif;
+        }
+
+        h2 {
+          font-size: 2rem;
+          font-weight: normal;
+          letter-spacing: 1px;
+        }
+
+        .subtitle {
+          font-size: 1.2rem;
+          opacity: 0.8;
+        }
+
+        .nav-link-custom {
+          font-weight: 600;
+          margin: 0 10px;
+          text-decoration: none;
+          color: var(--color-text);
+          transition: color 0.2s ease;
+        }
+
+        .nav-link-custom:hover,
+        .nav-link-custom.active {
+          color: var(--color-accent) !important;
+        }
+
+        .drop-zone {
+          border: 2px dashed var(--color-accent);
+          border-radius: 12px;
+          background-color: #111;
+          padding: 40px;
+          text-align: center;
+        }
+
+        input[type="file"] {
+          display: none;
+        }
+
+        .btn-primary {
+          background-color: #000000 !important; /* Чёрный фон */
+          color: var(--color-accent);
+          border: 2px solid var(--color-accent);
+          padding: 10px 24px;
+          font-size: 1rem;
+          border-radius: 10px;
+          font-family: 'Kurale', serif;
+          text-align: center;
+          text-shadow: 0 0 1px var(--color-accent);
+          box-shadow: inset 0 0 0 1000px #000000, 0 0 6px rgba(10, 147, 192, 0.3);
+          cursor: pointer;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          appearance: none;
+        }
+
+
+
+        .btn-primary:hover {
+          transform: scale(1.06);
+          box-shadow: 0 0 10px rgba(10, 147, 192, 0.6), 0 0 20px rgba(10, 147, 192, 0.4);
+        }
+
+
+        .fixed-home {
+          position: fixed;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .btn-home {
+          all: unset;
+          display: inline-block;
+          background-color: var(--color-bg);
+          color: var(--color-accent);
+          border: 2px solid var(--color-accent);
+          padding: 10px 20px;
+          font-size: 1rem;
+          font-family: 'Kurale', serif;
+          border-radius: 10px;
+          text-shadow: 0 0 1px var(--color-accent);
+          box-shadow: 0 0 6px rgba(10, 147, 192, 0.3);
+          cursor: pointer;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-home:hover {
+          transform: scale(1.06);
+          box-shadow: 0 0 10px rgba(10, 147, 192, 0.6), 0 0 20px rgba(10, 147, 192, 0.4);
+        }
+
+        .upload-success {
+          margin-top: 20px;
+          display: inline-block;
+          padding: 10px 20px;
+          border: 2px solid var(--color-accent);
+          border-radius: 8px;
+          color: var(--color-accent);
+          background-color: #000000; /* ЧЁТКИЙ ЧЕРНЫЙ ФОН */
+          font-family: 'Kurale', serif;
+          box-shadow: 0 0 10px rgba(10, 147, 192, 0.3);
+          text-shadow: 0 0 2px var(--color-accent);
+          transition: opacity 0.3s ease;
+        }
+
+
+        .d-none {
+          display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5 text-center">
+    <h2>Загрузи сюда</h2>
+    <p class="subtitle mb-4">то, что хочешь сохранить... или забыть.</p>
+
+    <div class="mb-4">
+        <a href="/upload" class="nav-link-custom active">Сохранить</a>
+        <a href="/images" class="nav-link-custom">Найти</a>
+    </div>
+
+    <div id="dropZone" class="drop-zone mx-auto" style="max-width: 480px;">
+        <p class="mb-1">📁 Выбери файлы или перетащи их сюда</p>
+        <p class="subtitle small mb-3">.jpg, .png, .gif — до 5MB каждый</p>
+        <button id="customUploadBtn" class="btn-primary" type="button">Загрузить файлы</button>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+    </div>
+
+    <div id="successMessage" class="upload-success d-none">
+        ✅ Загружено файлов: 0
+    </div>
+
+    <div class="fixed-home">
+        <a href="/" class="btn-home">Вернуться на главную страницу</a>
+    </div>
+</div>
+
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const customUploadBtn = document.getElementById('customUploadBtn');
+    const successMessage = document.getElementById('successMessage');
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        await uploadFiles(files);
+      }
+    });
+
+    customUploadBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', async () => {
+      if (fileInput.files.length > 0) {
+        await uploadFiles(fileInput.files);
+      }
+    });
+
+    async function uploadFiles(files) {
+      let uploadedCount = 0;
+      for (let file of files) {
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`Файл ${file.name} превышает 5MB.`);
+          continue;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          uploadedCount++;
+        } else {
+          alert(`Ошибка загрузки файла ${file.name}.`);
+        }
+      }
+
+      if (uploadedCount > 0) {
+        successMessage.textContent = `✅ Загружено файлов: ${uploadedCount}`;
+        successMessage.classList.remove("d-none");
+        setTimeout(() => {
+          successMessage.classList.add("d-none");
+        }, 4000);
+      }
+    }
+</script>
+</body>
+</html>
