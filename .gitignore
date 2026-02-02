@@ -1,47 +1,12 @@
-# Python
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.pyd
 *.so
-*.egg
-*.egg-info/
-dist/
 build/
 *.log
 
-# Env files
 .env
-
-# Virtual environments
-venv/
 env/
-.venv/
 
-# Docker
-*.pid
-*.pid.lock
-docker-compose.override.yml
 
-# Volumes
-images/
-logs/
 
-# Editor files
-.vscode/
-.idea/
-*.swp
-*.swo
 
-# OS files
-.DS_Store
-Thumbs.db
 
-# Node/npm (на случай если добавишь фронт)
-node_modules/
-
-# Other
-*.bak
-merge_files.py
-photoserver.txt
