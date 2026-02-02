@@ -15,7 +15,13 @@
 2️⃣ Выполните команду:
 ```bash
 docker compose up --build
+
+
 ```
+* После запуска:
+* -Главная страница: http://localhost:8080
+* 	•	Загрузка изображений: http://localhost:8080/upload
+* 	•	Доступ к изображениям: http://localhost:8080/images/
 
 ## Струкура проекта:
 ```bash

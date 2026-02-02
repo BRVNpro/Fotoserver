@@ -1,24 +1,24 @@
-version: '3.8'  # Указание версии Docker Compose, которая используется для определения синтаксиса
+version: '3.8'
 
 services:
   fotoserver:
-    build: .  # Путь к Dockerfile для сборки сервиса (в текущей директории)
-    container_name: fotoserver  # Имя контейнера, которое будет использоваться вместо автоматически сгенерированного
+    build: .
+    container_name: fotoserver
     volumes:
-      - ./images:/app/images  # Связывание локальной папки images с директорией /app/images внутри контейнера
-      - ./logs:/app/logs  # Связывание локальной папки logs с директорией /app/logs внутри контейнера
-    restart: unless-stopped  # Политика перезапуска: контейнер перезапускается всегда, кроме случаев, когда его остановили вручную
+      - ./images:/app/images
+      - ./logs:/app/logs
+    restart: unless-stopped
     expose:
-      - "8000"  # Экспорт порта 8000 внутри контейнера (для внутреннего использования, не отображается на хосте)
+      - "8000"
 
   nginx:
-    image: nginx:latest  # Использование официального образа Nginx последней версии
-    container_name: fotoserver_nginx  # Имя контейнера Nginx
+    image: nginx:latest
+    container_name: fotoserver_nginx
     ports:
-      - "8080:80"  # Проброс порта 80 из контейнера на порт 8080 у хоста
+      - "8080:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # Связывание пользовательской конфигурации Nginx (только для чтения)
-      - ./images:/app/images:ro  # Связывание папки с изображениями для доступа через веб-сервер Nginx (только для чтения)
-    restart: unless-stopped  # Политика перезапуска: контейнер перезапускается всегда, кроме случаев, когда его остановили вручную
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./images:/app/images:ro
+    restart: unless-stopped
     depends_on:
-      - fotoserver  # Указывает, что запуск контейнера nginx зависит от запущенного контейнера fotoserver
+      - fotoserver
